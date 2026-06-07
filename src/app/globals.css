@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --color-background: #0b1326;
+  --color-on-background: #dae2fd;
+  --color-primary: #adc6ff;
+  --color-on-primary: #002e6a;
+  --color-secondary: #b7c8e1;
+  --color-tertiary: #4edea3;
+  --color-surface: #0b1326;
+  --color-surface-container: #171f33;
+  --color-surface-bright: #31394d;
+  --color-outline: #8c909f;
+  --color-glass: rgba(30, 41, 59, 0.7);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+:root {
+  --background: #0b1326;
+  --foreground: #dae2fd;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+}
+
+.glass-card {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(66, 71, 84, 0.4);
+}
+
+.hero-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(173, 198, 255, 0.1) 0%, transparent 50%);
+}
+
+.technical-grid {
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, rgba(140, 144, 159, 0.05) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(140, 144, 159, 0.05) 1px, transparent 1px);
+}
