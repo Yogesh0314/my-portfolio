@@ -24,11 +24,12 @@ const projects = [
     image: "/projects/sports-system.png",
   },
   {
-    title: "Inventory Management System",
-    description: "A full-stack inventory management application for tracking products, categories, and stock records with efficient MongoDB integration.",
-    tags: ["React.js", "Node.js", "MongoDB", "Express.js"],
-    github: "https://github.com/Yogesh0314/",
-    image: null, // No screenshot yet
+    title: "Smart Inventory Management System",
+    description: "Developed a production-grade inventory management platform with real-time stock tracking, supplier management, transaction history, analytics dashboards, role-based authentication, PDF reporting, and CSV/Excel import-export functionality using React, Node.js, Express, and MongoDB.",
+    tags: ["React", "Node.js", "Express.js", "MongoDB", "Tailwind CSS", "TanStack Query", "JWT Authentication", "Docker", "Vitest"],
+    github: "https://github.com/Yogesh0314/Inventory",
+    live: "https://inventory-livid-phi.vercel.app/login",
+    image: "/projects/inventory.png",
   },
 ];
 
