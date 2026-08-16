@@ -14,10 +14,11 @@ export function Contact() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setSubmitStatus("submitting");
     setErrorMessage(null);
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
     
     if (!accessKey) {
@@ -36,7 +37,7 @@ export function Contact() {
 
       if (data.success) {
         setSubmitStatus("success");
-        e.currentTarget.reset();
+        form.reset();
         setTimeout(() => setSubmitStatus("idle"), 5000);
       } else {
         setSubmitStatus("error");
