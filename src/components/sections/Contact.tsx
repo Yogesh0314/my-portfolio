@@ -4,17 +4,48 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Container } from "../ui/Container";
 import { Button } from "../ui/Button";
-import { Mail, Send, Download, MapPin, CheckCircle } from "lucide-react";
+import { Mail, Send, Download, MapPin, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa6";
 import { SiLeetcode } from "react-icons/si";
 
 export function Contact() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setSubmitStatus("submitting");
+    setErrorMessage(null);
+
+    const formData = new FormData(e.currentTarget);
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    
+    if (!accessKey) {
+      console.warn("Web3Forms access key is missing. Please add NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY to your .env.local file.");
+    }
+    
+    formData.append("access_key", accessKey || "YOUR_ACCESS_KEY_HERE");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitStatus("success");
+        e.currentTarget.reset();
+        setTimeout(() => setSubmitStatus("idle"), 5000);
+      } else {
+        setSubmitStatus("error");
+        setErrorMessage(data.message || "Failed to send message. Please check your configuration.");
+      }
+    } catch (error) {
+      setSubmitStatus("error");
+      setErrorMessage("A network error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -121,9 +152,11 @@ export function Contact() {
                 <input 
                   type="text" 
                   id="name" 
+                  name="name"
                   required
+                  disabled={submitStatus === "submitting"}
                   placeholder="e.g. Hiring Manager / Recruiter"
-                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
               
@@ -132,9 +165,11 @@ export function Contact() {
                 <input 
                   type="email" 
                   id="email" 
+                  name="email"
                   required
+                  disabled={submitStatus === "submitting"}
                   placeholder="recruiter@company.com"
-                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -142,16 +177,40 @@ export function Contact() {
                 <label htmlFor="message" className="text-xs font-mono font-bold text-gray-300 ml-1">Message Details</label>
                 <textarea 
                   id="message" 
+                  name="message"
                   rows={4}
                   required
+                  disabled={submitStatus === "submitting"}
                   placeholder="Let's connect regarding software engineering opportunities..."
-                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors resize-none"
+                  className="w-full bg-[#030303]/80 border border-primary/20 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               </div>
 
-              <Button className="w-full group glow-primary" size="lg" type="submit">
-                {submitted ? (
+              {submitStatus === "error" && errorMessage && (
+                <div className="flex items-center gap-2 p-3 text-xs text-error bg-error/10 border border-error/20 rounded-xl font-mono">
+                  <AlertCircle size={16} className="shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {!process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY && (
+                <div className="text-[11px] text-amber-400/80 bg-amber-400/5 border border-amber-400/10 p-2.5 rounded-xl font-mono leading-relaxed">
+                  ⚠️ <strong>Access Key Missing:</strong> Please add <code>NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY</code> to your <code>.env.local</code>. Get one free at <a href="https://web3forms.com" target="_blank" rel="noreferrer" className="underline hover:text-amber-300">web3forms.com</a>.
+                </div>
+              )}
+
+              <Button 
+                className="w-full group glow-primary" 
+                size="lg" 
+                type="submit"
+                disabled={submitStatus === "submitting"}
+              >
+                {submitStatus === "submitting" ? (
                   <span className="flex items-center gap-2 text-[#000000] font-bold">
+                    <Loader2 size={18} className="animate-spin" /> Sending Message...
+                  </span>
+                ) : submitStatus === "success" ? (
+                  <span className="flex items-center gap-2 text-success font-bold">
                     <CheckCircle size={18} /> Message Sent!
                   </span>
                 ) : (
