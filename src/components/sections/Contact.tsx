@@ -43,6 +43,7 @@ export function Contact() {
         setErrorMessage(data.message || "Failed to send message. Please check your configuration.");
       }
     } catch (error) {
+      console.error("Submission error details:", error);
       setSubmitStatus("error");
       setErrorMessage("A network error occurred. Please try again later.");
     }
